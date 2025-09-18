@@ -1,0 +1,128 @@
+#include <iostream>
+#include <vector>
+#include <set>
+#include <algorithm>
+
+class DynamicMatrix {
+private:
+	std::vector<std::vector<int>> data;
+
+public:
+	DynamicMatrix(size_t r, size_t c) {
+		data.resize(r, std::vector<int>(c, 0));
+	}
+
+	int getElem(size_t r, size_t c) const {
+		if (r >= data.size() || c >= data[0].size()) {
+			throw std::out_of_range("wrong index");
+		}
+		return data[r][c];
+	}
+
+	void setElem(size_t r, size_t c, int val) {
+		if (r >= data.size() || c >= data[0].size()) {
+			throw std::out_of_range("wrong index");
+		}
+		data[r][c] = val;
+	}
+
+	void addRow() {
+		if (data.empty()) {
+			data.push_back(std::vector<int>(1, 0));
+		} else {
+			data.push_back(std::vector<int>(data[0].size(), 0));
+		}
+	}
+
+	void addColumn() {
+		if (data.empty()) {
+			data.push_back(std::vector<int>(1, 0));
+		} else {
+			for (auto& r : data) {
+				r.push_back(0);
+			}
+		}
+	}
+
+	void print() const {
+		for (const auto& r : data) {
+			for (const auto& v : r) {
+				std::cout << v << " ";
+			}
+			std::cout << "\n";
+		}
+	}
+};
+
+std::vector<int> findIntersection(const std::vector<int>& a, const std::vector<int>& b) {
+	std::set<int> sa(a.begin(), a.end());
+	std::set<int> sb(b.begin(), b.end());
+	std::vector<int> res;
+	for (int x : sa) {
+		if (sb.find(x) != sb.end()) res.push_back(x);
+	}
+	return res;
+}
+
+class VectorStats {
+public:
+	VectorStats(const std::vector<double>& v) {
+		data = v;
+	}
+
+	double mean() const {
+		if (data.empty()) return 0.0;
+		double s = 0.0;
+		for (double val : data) {
+			s += val;
+		}
+		return s / static_cast<double>(data.size());
+	}
+
+	double median() const {
+		if (data.empty()) return 0.0;
+		std::vector<double> tmp = data;
+		std::sort(tmp.begin(), tmp.end());
+		size_t n = tmp.size();
+		if (n % 2 == 1) return tmp[n / 2];
+		return (tmp[n / 2 - 1] + tmp[n / 2]) / 2.0;
+	}
+
+	void addValue(double value) {
+		data.push_back(value);
+	}
+
+	void removeValue(double value) {
+		auto it = std::find(data.begin(), data.end(), value);
+		if (it != data.end()) data.erase(it);
+	}
+
+private:
+	std::vector<double> data;
+};
+
+int main() {
+	DynamicMatrix matrix(3, 3);
+	matrix.setElem(1, 1, 42);
+	matrix.addRow();
+	matrix.addColumn();
+	matrix.print();
+
+	std::vector<int> a = {1, 2, 3, 4, 5};
+	std::vector<int> b = {3, 4, 5, 6, 7};
+	std::vector<int> inter = findIntersection(a, b);
+	std::cout << "Intersection: ";
+	for (int x : inter) std::cout << x << " ";
+	std::cout << "\n";
+
+	std::vector<double> nums = {1.0, 2.0, 3.0, 4.0};
+	VectorStats stats(nums);
+	std::cout << "Mean: " << stats.mean() << "\n";
+	std::cout << "Median: " << stats.median() << "\n";
+	stats.addValue(10.0);
+	std::cout << "After adding 10 -> Mean: " << stats.mean() << ", Median: " << stats.median() << "\n";
+	stats.removeValue(2.0);
+	std::cout << "After removing 2 -> Mean: " << stats.mean() << ", Median: " << stats.median() << "\n";
+
+	return 0;
+}
