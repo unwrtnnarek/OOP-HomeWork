@@ -1,0 +1,52 @@
+#include <iostream>
+
+template <class T>
+struct TreeNode {
+
+	T val;
+	TreeNode<T>* left;
+	TreeNode<T>* right;
+	TreeNode(T v) : val(v), left(nullptr), right(nullptr) {}
+
+};
+
+template <class T>
+bool inorder(TreeNode<T>* root, int& k, T& result ) {
+	if(!root) return false;
+
+	if(inorder(root->left, k, result)) {
+
+		return true;
+	}
+
+	k--;
+	if(k == 0) {
+		result = root->val;
+		return true;
+	}
+
+	return(inorder(root->right, k, result));
+
+}
+
+template <typename T>
+
+T kthSmallest(TreeNode<T>* root, int k) {
+
+	T result {};
+	inorder(root, k, result);
+	return result;
+}
+
+
+int main()
+{
+	TreeNode<int>* root = new TreeNode(5);
+	root->left = new TreeNode(3);
+	root->right = new TreeNode(7);
+	root->left->left = new TreeNode(1);
+	root->left->right = new TreeNode(4);
+    
+	int result = kthSmallest(root, 3);  
+    std::cout << result;
+}
